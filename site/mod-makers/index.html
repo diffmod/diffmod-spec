@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiffMod for mod makers</title>
+<meta name="description" content="Keep your VPK and add one small .patch file. Mod managers use it to merge your mod with other mods and to repair it after game updates.">
+<link rel="canonical" href="https://source2-diffmod.org/mod-makers/">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DiffMod">
+<meta property="og:title" content="DiffMod for mod makers">
+<meta property="og:description" content="Keep your VPK and add one small .patch file. Mod managers use it to merge your mod with other mods and to repair it after game updates.">
+<meta property="og:url" content="https://source2-diffmod.org/mod-makers/">
+<meta property="og:image" content="https://source2-diffmod.org/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header>
+<nav class="site">
+<a href="../">Home</a>
+<a href="../users/">I play with mods</a>
+<a href="./" aria-current="page">I make mods</a>
+<a href="../mod-managers/">I make a mod manager</a>
+<a href="../spec/">The rules (spec)</a>
+</nav>
+<h1>You make mods?</h1>
+<p class="tagline">Keep your VPK. Add a companion.</p>
+</header>
+<main>
+<section id="benefits">
+<h2>What you get</h2>
+<ul>
+<li>Your mod works next to other mods. You get fewer "mod X broke your mod" reports.</li>
+<li>Patch day stops as an emergency. Managers keep your mod alive if Valve did not touch your lines.</li>
+<li>If Valve did touch your lines, the patch shows the exact spot to fix.</li>
+<li>Your release flow stays. Same tools, same VPK, same download page.</li>
+<li>Players can read what your mod changes. That builds trust.</li>
+</ul>
+<p>The cost is one small text file per release. Players with no mod manager see no change.</p>
+</section>
+<section id="ways">
+<h2>Two ways to ship</h2>
+<ul>
+<li><strong>VPK plus companion.</strong> Start here. Ship your VPK as today. Add one <code>.patch</code> file next to it. Players with no mod manager see no change.</li>
+<li><strong>Plain DiffMod.</strong> Ship diffs alone, with no VPK. A manager builds the mod past fresh game files. See the <a href="../spec/">spec</a>.</li>
+</ul>
+</section>
+<section id="shape">
+<h2>Shape your mod for small diffs</h2>
+<p>A companion holds diffs for game files that your VPK replaces. New files stay in the VPK. Small diffs merge with other mods and survive game updates.</p>
+<ul>
+<li>Put new panels, styles, and scripts in new files.</li>
+<li>Place new files under a folder named after the mod, for example <code>panorama/styles/compact_hud/</code>.</li>
+<li>Hook new files into game files with small edits, such as one include line.</li>
+<li>Prefer style edits over layout edits.</li>
+</ul>
+</section>
+<section id="make">
+<h2>Make a companion</h2>
+<ol>
+<li>List the files in your VPK that the game VPK also holds.</li>
+<li>Decompile each one from the game VPK into folder <code>a</code>.</li>
+<li>Decompile each one from your VPK into folder <code>b</code>. Use the same decompiler release.</li>
+<li>Check that both folders hold each file at its VPK path.</li>
+<li>Diff the two folders, and add a header.</li>
+<li>Name the companion after its VPK: <code>pak01_dir.vpk</code> pairs with <code>pak01_dir.patch</code>.</li>
+</ol>
+<pre><code>GAME="…/common/Deadlock/game"
+F=panorama/layout/hud.vxml_c
+Source2Viewer-CLI -i "$GAME/citadel/pak01_dir.vpk" -d -o a -f "$F"
+Source2Viewer-CLI -i mymod/pak01_dir.vpk -d -o b -f "$F"
+{
+  printf '# spec: source2-diffmod/v1\n'
+  printf '# game: deadlock\n'
+  printf '# decompiler: source2viewer-cli/20.1\n'
+  printf '# title: Compact HUD\n'
+  printf '# vpk: pak01_dir.vpk\n'
+  diff -ru a b
+} &gt; mymod/pak01_dir.patch</code></pre>
+<p>Repeat the decompile step for each shared file. The result looks like this. Paths are illustrative.</p>
+<pre><code># spec: source2-diffmod/v1
+# game: deadlock
+# decompiler: source2viewer-cli/20.1
+# title: Compact HUD
+# vpk: pak01_dir.vpk
+--- a/panorama/layout/hud.xml
++++ b/panorama/layout/hud.xml
+@@ -2,6 +2,7 @@
+   &lt;styles&gt;
+     &lt;include src="s2r://panorama/styles/hud.vcss_c" /&gt;
+     &lt;include src="s2r://panorama/styles/hud_common.vcss_c" /&gt;
++    &lt;include src="s2r://panorama/styles/compact_hud/main.vcss_c" /&gt;
+   &lt;/styles&gt;
+   &lt;scripts&gt;
+     &lt;include src="s2r://panorama/scripts/hud.vjs_c" /&gt;</code></pre>
+</section>
+<section id="check">
+<h2>Check it</h2>
+<p>The companion must apply to the game copy and reverse apply to your VPK copy.</p>
+<pre><code>(cd a &amp;&amp; git apply --check ../mymod/pak01_dir.patch)
+(cd b &amp;&amp; git apply -R --check ../mymod/pak01_dir.patch)</code></pre>
+<p>Managers run the same reverse check. If it fails, they treat your VPK as a plain VPK.</p>
+</section>
+<section id="ship">
+<h2>Ship it</h2>
+<ul>
+<li>Put the <code>.vpk</code> and the <code>.patch</code> in one archive.</li>
+<li>Cover each game file that your VPK replaces.</li>
+<li>Do not put new files in the companion. The VPK ships them.</li>
+<li>After a game update, managers can rebuild stale files for players. Reissue your VPK and companion when you can.</li>
+</ul>
+</section>
+</main>
+<footer>
+<p>Canonical text lives in the <a href="https://github.com/s2d-org/source2-diffmod-spec">repo</a>. Strict rules live in the <a href="../spec/#companions">spec</a>.</p>
+</footer>
+<script>/* opened from disk: folder links need an explicit index.html */if(location.protocol==="file:")for(const a of document.querySelectorAll("a[href]")){const h=a.getAttribute("href");if(!/^([a-z]+:|#)/i.test(h))a.setAttribute("href",h.replace(/^([^?#]*\/)(?=[?#]|$)/,"$1index.html"))}</script>
+</body>
+</html>

@@ -4,28 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Source 2 DiffMod Spec</title>
-<style>
-body { max-width: 44rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.6 system-ui, sans-serif; color: #1a1a1a; }
-header { border-bottom: 2px solid #1a1a1a; margin-bottom: 1.5rem; }
-nav a { margin-right: 1rem; }
-pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; }
-code { background: #f4f4f4; padding: 0 .25rem; }
-pre code { background: none; padding: 0; }
-table { border-collapse: collapse; }
-th, td { border: 1px solid #999; padding: .25rem .75rem; }
-footer { border-top: 1px solid #999; margin-top: 2rem; padding-top: 1rem; font-size: .9rem; }
-.tagline { font-size: 1.2rem; font-weight: 600; }
-ol.spec > li { margin-bottom: 1rem; }
-</style>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <header>
+<nav class="site">
+<a href="../">Home</a>
+<a href="../users/">I play with mods</a>
+<a href="../mod-makers/">I make mods</a>
+<a href="../mod-managers/">I make a mod manager</a>
+<a href="./" aria-current="page">The rules (spec)</a>
+</nav>
 <h1>Source 2 DiffMod Spec</h1>
 <p class="tagline">A DiffMod holds plain diffs over decompiled sources.</p>
 <p>Status is draft. Spec version is 1.</p>
 <nav>
 <a href="#introduction">Introduction</a>
+<a href="#terms">Terms</a>
 <a href="#specification">Specification</a>
+<a href="#companions">Companions</a>
 <a href="#advisory">Advisory</a>
 <a href="#profiles">Profiles</a>
 <a href="#decompilers">Decompilers</a>
@@ -35,20 +33,35 @@ ol.spec > li { margin-bottom: 1rem; }
 <main>
 <section id="introduction">
 <h2>Introduction</h2>
-<p>Source 2 mods ship as VPK packs with compiled sources. A VPK hides what it edits. Two VPKs that touch one file clash, and the last load wins. Each game update breaks VPKs, and authors must reissue each pack by hand.</p>
+<p>Source 2 mods ship as VPK packs with compiled sources. A VPK hides what it edits. Two VPKs that replace one file clash, and the last load wins. A VPK holds full files, so it also hides later Valve edits to those files. After such a game update, the author must reissue the pack by hand.</p>
 <p>A DiffMod holds plain diffs over decompiled sources. A diff shows what it edits. Builders merge DiffMods at build time and flag clashes with text conflicts. A DiffMod often still applies after a game update, since a rebuild runs it past fresh sources. If it fails, the diff marks the exact spot that needs care.</p>
+<p>Most mods still ship as VPKs. A companion is a DiffMod that ships next to a VPK. Users with no builder load the VPK as it is. Builders use the companion to merge clashes and to repair stale files.</p>
+</section>
+<section id="terms">
+<h2>Terms</h2>
+<ul>
+<li>A <strong>target</strong> is a cleartext path that a DiffMod changes.</li>
+<li>A <strong>builder</strong> is a tool that applies DiffMods and packs the result into a VPK. A mod manager that reads DiffMods is a builder.</li>
+<li>A <strong>mod VPK</strong> is a VPK that a mod ships.</li>
+<li>A mod VPK <strong>replaces</strong> a game file if it holds a file at the same path.</li>
+<li>A <strong>companion</strong> is a DiffMod with a <code>vpk</code> key.</li>
+<li>A <strong>plain DiffMod</strong> is a DiffMod with no <code>vpk</code> key.</li>
+<li>A <strong>plain VPK</strong> is a mod VPK that no companion names.</li>
+<li>The <strong>game copy</strong> of a target is the file from the game VPKs.</li>
+<li>A <strong>VPK copy</strong> of a target is the file from a mod VPK.</li>
+</ul>
 </section>
 <section id="specification">
 <h2>Specification</h2>
-<p>The key words "MUST", "MUST NOT", and "RECOMMENDED" in this text state strict rules.</p>
+<p>The key words "MUST" and "MUST NOT" mark strict rules. An imperative sentence in a numbered rule is also strict. The key word "RECOMMENDED" marks advice that a builder or an author can skip for a good reason.</p>
 <ol class="spec">
 <li>A DiffMod is a UTF-8 text file with LF line ends.</li>
 <li>Keep one DiffMod per file.</li>
 <li>The header holds zero or more lines at the top of the file. Each header line starts with <code>#</code>. The header ends at the first line that starts without <code>#</code>.</li>
-<li>The keys are <code>spec</code>, <code>title</code>, <code>game</code>, <code>game-build</code>, and <code>decompiler</code>. Builders ignore unknown <code>#</code> lines. Builders treat them as comments. Compound values use the <code>name/version</code> form. All header keys are optional.</li>
+<li>A key line has the form <code># &lt;key&gt;: &lt;value&gt;</code>. Trim the spaces around the key and the value. The keys are <code>spec</code>, <code>title</code>, <code>game</code>, <code>game-build</code>, <code>decompiler</code>, and <code>vpk</code>. Each key appears at most once, except <code>vpk</code>. If one of those keys repeats, builders read the first line. Builders ignore unknown <code>#</code> lines. Builders treat them as comments. Compound values use the <code>name/version</code> form. All header keys are optional.</li>
 <li>The <code>spec</code> key holds the spec name and version, for example <code>spec: source2-diffmod/v1</code>. A file without a <code>spec</code> key defaults to <code>source2-diffmod/v1</code>. If you add a header, place <code>spec</code> first.</li>
-<li>The <code>title</code> key holds a short human name. The <code>game</code> key holds the game id, for example <code>deadlock</code>. The <code>game</code> key routes the DiffMod to a profile. Builders with one game ignore it. The <code>game-build</code> key is RECOMMENDED and holds the game build id. The <code>decompiler</code> key is RECOMMENDED and holds a registry id plus a version, for example <code>source2viewer-cli/20.1</code>. Take ids from the <a href="#decompilers">registry</a>.</li>
-<li>The body is a unified diff. Use <code>diff -u</code> form with <code>---</code> and <code>+++</code> lines. The body MUST apply clean with <code>git apply -p1</code>.</li>
+<li>The <code>title</code> key holds a short human name. The <code>game</code> key holds the game id, for example <code>deadlock</code>. The <code>game</code> key routes the DiffMod to a profile. Builders with one game ignore it. The <code>game-build</code> key is RECOMMENDED and holds the game build id. The <code>decompiler</code> key is RECOMMENDED and holds a registry id plus a version, for example <code>source2viewer-cli/20.1</code>. Take ids from the <a href="#decompilers">registry</a>. The <code>vpk</code> key marks a companion, see rule 12.</li>
+<li>The body is a unified diff. Use <code>diff -u</code> form with <code>---</code> and <code>+++</code> lines. The body MUST apply clean with <code>git apply -p1</code> to the decompiled game files that the author used.</li>
 <li>Paths MUST use <code>a/</code> and <code>b/</code> prefixes. Paths MUST stay relative to the VPK root. New files MUST use <code>--- /dev/null</code> plus <code>+++ b/&lt;path&gt;</code>. Version 1 forbids renames. Version 1 forbids deletes. Use LF line ends in hunks.</li>
 <li>Each target path MUST map to a compiled path through the game profile. Each profile lists its own map. The next table shows the Deadlock map. Files with a raw suffix such as <code>.cfg</code> pass through with no compile step. If no map row fits a target, fail the build. Name the suffix in the error.
 <table>
@@ -58,22 +71,32 @@ ol.spec > li { margin-bottom: 1rem; }
 <tr><td><code>.js</code></td><td><code>.vjs_c</code></td></tr>
 </table>
 </li>
-<li>Decompile each target from the game VPKs. Apply DiffMods in the order the user gives. If two DiffMods touch the same hunk, fail the build. Compile each result with the game resourcecompiler. Pack compiled outputs plus raw files into one VPK.</li>
-<li>The builder MUST record the game build ID from <code>steam.inf</code>. The builder MUST record the decompiler id and version. The builder MUST record the spec version. Keep this record in the build log. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on mismatch is RECOMMENDED. Fail on mismatch is allowed but not RECOMMENDED.</li>
+<li>Decompile each target that the game VPKs hold. Apply DiffMods in the order the user gives. If a plain DiffMod does not apply after the earlier ones, fail the build. Name the DiffMod and the target in the error. Compile each result with the game resourcecompiler. Pack compiled outputs plus raw files into one VPK.</li>
+<li>The builder MUST record the game build ID from <code>steam.inf</code>. The builder MUST record the decompiler id and version. The builder MUST record the spec version. Keep this record in the build log. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on decompiler mismatch is RECOMMENDED. Fail on decompiler mismatch is allowed but not RECOMMENDED.</li>
+</ol>
+<h3 id="companions">Companions</h3>
+<ol class="spec" start="12">
+<li>A companion ships next to one or more mod VPKs. The VPKs hold the full mod and load with no build. The companion holds the diffs for the game files that those VPKs replace. Each <code>vpk</code> line names one VPK. The value MUST be a bare file name with no path separator. Resolve the name in the folder that holds the companion. Repeat the key for each VPK. For a pack with chunk files, name the <code>_dir.vpk</code> file. A builder that renames a VPK MUST keep the pair in its own records.</li>
+<li>A companion MUST cover each game file that its VPKs replace, if the profile lists the suffix. The body MUST reverse apply clean to the decompiled VPK copies with <code>git apply -R -p1</code>. Two VPKs of one companion MUST NOT replace the same game file. A companion MUST NOT add new files. New files stay in the VPKs. Files with other suffixes stay outside the companion. For those files, the last load wins.</li>
+<li>Builders MUST NOT apply a companion without its VPKs. If a named VPK is absent, skip the companion. Warn, and name the absent VPK.</li>
+<li>A companion pair needs no build by default. Load its VPKs as they are. Rebuild a target only for a clash, see rule 16, or for a stale copy, see rule 19.</li>
+<li>A plain DiffMod changes each target in its body. A mod VPK changes each target whose game file it replaces. Two mods clash on a target if both change it. If mods clash on a target, rebuild that target.</li>
+<li>To rebuild a target, take the game copy as the base and decompile it. Apply each DiffMod that covers the target, in the order the user gives. If a companion does not apply, leave it out of that target. Warn, and name the mod and the target. Compile the result, and pack it into the one VPK from rule 10. That VPK MUST take priority over each mod VPK. New files still load from the mod VPKs.</li>
+<li>A plain VPK copy has no diff. If a plain VPK replaces the target, use its decompiled copy as the base in place of the game copy. If two plain VPKs replace the target, use the copy that the game loads, and warn. A VPK copy that its companion does not cover counts as a plain VPK copy.</li>
+<li>Check each companion pair on install and after each game update. Decompile each VPK copy that the companion covers. Reverse apply the companion to those copies. If the reverse apply fails, the pair does not match. Warn, and treat its VPKs as plain VPKs. If it succeeds, the result is the base that the author used. Compare that base with the game copy. If they differ, the VPK copy is stale and hides Valve edits. Offer a rebuild of that target, and let the user decide. This check and this offer are RECOMMENDED.</li>
+</ol>
+<h3 id="scope">Scope and versions</h3>
+<ol class="spec" start="20">
 <li>Spec version 1 covers Deadlock. The core stays game neutral. New titles need a profile and a build test. Send profiles as spec pull requests.</li>
 <li>Spec versions use plain integers with a v prefix: v1, v2, v3. Builders warn on unknown spec versions and proceed. A new integer marks a break in form or build acts. Freeze each released version. Never edit a frozen version. If you fix a typo, add an erratum in the changelog.</li>
 </ol>
-<pre><code># spec: source2-diffmod/v1
-# game: deadlock
-# decompiler: source2viewer-cli/20.1
-# title: Always show ability suggestions
---- a/panorama/styles/hud_ability_icon.css
-+++ b/panorama/styles/hud_ability_icon.css</code></pre>
 </section>
 <section id="advisory">
 <h2>Advisory</h2>
 <p>This section is advisory, not strict.</p>
-<p>Keep hunks small. Small hunks survive game updates. Large ones clash. Prefer style edits over layout edits. Style rules clash less than moved panels. Never ship full game files. Ship diffs alone. Full files hide Valve edits. Name titles plainly. The title key serves mod lists and managers. Name stored DiffMods with the <code>.patch</code> suffix. Keep three lines of context.</p>
+<p>Keep hunks small. Small hunks survive game updates. Large ones clash. Prefer style edits over layout edits. Style rules clash less than moved panels. Put new panels, styles, and scripts in new files. Hook them in with small hunks, such as one include line. Place new files under a folder named after the mod.</p>
+<p>A plain DiffMod needs a builder on the user machine. A VPK with a companion loads with no builder. Pick the form that fits your users. Never ship a VPK that replaces game files with no companion. Full game files hide Valve edits. Never ship a game file that you did not change. Name the companion after its VPK, for example <code>pak01_dir.vpk</code> and <code>pak01_dir.patch</code>. Make the companion with a tool, not by hand. Decompile the game copy and the VPK copy with one decompiler, then diff them. Set the <code>decompiler</code> key in each companion. If a game update edits a file that your VPK replaces, reissue the VPK and the companion.</p>
+<p>Name titles plainly. The title key serves mod lists and managers. Name stored DiffMods with the <code>.patch</code> suffix. Keep three lines of context.</p>
 </section>
 <section id="example">
 <h2>Example</h2>
@@ -82,6 +105,22 @@ ol.spec > li { margin-bottom: 1rem; }
 # game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Always show ability suggestions</code></pre>
+<p>A companion looks like this. The VPK ships <code>compact_hud/main.css</code> as a new file. The companion holds only the hook. Paths are illustrative.</p>
+<pre><code># spec: source2-diffmod/v1
+# game: deadlock
+# decompiler: source2viewer-cli/20.1
+# title: Compact HUD
+# vpk: pak01_dir.vpk
+--- a/panorama/layout/hud.xml
++++ b/panorama/layout/hud.xml
+@@ -2,6 +2,7 @@
+   &lt;styles&gt;
+     &lt;include src="s2r://panorama/styles/hud.vcss_c" /&gt;
+     &lt;include src="s2r://panorama/styles/hud_common.vcss_c" /&gt;
++    &lt;include src="s2r://panorama/styles/compact_hud/main.vcss_c" /&gt;
+   &lt;/styles&gt;
+   &lt;scripts&gt;
+     &lt;include src="s2r://panorama/scripts/hud.vjs_c" /&gt;</code></pre>
 </section>
 <section id="profiles">
 <h2>Profiles</h2>
@@ -111,10 +150,24 @@ ol.spec > li { margin-bottom: 1rem; }
 <p>Re-derive it from fresh sources. The old diff shows the prior intent.</p>
 <h3>Why the <code>.patch</code> suffix?</h3>
 <p>Diff tools and builders read it with no extra setup.</p>
+<h3>Why ship a VPK and a companion?</h3>
+<p>Users with no builder drop in the VPK and play. Builders read the companion to merge clashes and to find stale files. Authors keep one release flow.</p>
+<h3>Do builders use the companion on each load?</h3>
+<p>No. A builder rebuilds a file only if two mods change it, or if the user accepts a repair.</p>
+<h3>What if two companions do not merge?</h3>
+<p>The builder leaves the later one out of that file and warns. Change the mod order to keep the other one.</p>
+<h3>How does a builder find a stale file?</h3>
+<p>It reverse applies the companion to the VPK copy. The result is the game file that the author used. If the current game file differs, the VPK copy is stale.</p>
+<h3>Does each game update make a VPK stale?</h3>
+<p>No. A VPK copy is stale only if Valve edited that same file.</p>
+<h3>Why does a companion need its VPK?</h3>
+<p>The diffs hook in new files that only the VPK holds. A build without the VPK points at absent files.</p>
+<h3>Why may a companion not add new files?</h3>
+<p>The VPK already ships them. A second copy can drift from the first.</p>
 <h3>What about CS2 or Dota 2?</h3>
 <p>Version 1 covers Deadlock alone. The core fits more titles with Panorama sources in VPKs. Each new title needs a profile and a build test.</p>
 <h3>Why pin the decompiler?</h3>
-<p>Decompile output shifts with the decompiler release. A pinned version keeps builds repeatable.</p>
+<p>Decompile output shifts with the decompiler release. A pinned version keeps builds repeatable. It also keeps the companion check exact.</p>
 <h3>How do new decompiler names get issued?</h3>
 <p>Send a pull request that adds one registry row. Take the first free slug. The id maps to one tool and one release line.</p>
 <h3>Does a new decompiler need a new spec version?</h3>
@@ -129,5 +182,6 @@ ol.spec > li { margin-bottom: 1rem; }
 <p>Canonical text is <code>spec/v1.md</code> in the repo.</p>
 <p><a href="https://github.com/s2d-org/source2-diffmod-spec">github.com/s2d-org/source2-diffmod-spec</a></p>
 </footer>
+<script>/* opened from disk: folder links need an explicit index.html */if(location.protocol==="file:")for(const a of document.querySelectorAll("a[href]")){const h=a.getAttribute("href");if(!/^([a-z]+:|#)/i.test(h))a.setAttribute("href",h.replace(/^([^?#]*\/)(?=[?#]|$)/,"$1index.html"))}</script>
 </body>
 </html>

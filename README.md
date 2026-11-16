@@ -12,17 +12,6 @@ Modbox is the reference implementation.
 It lives at https://github.com/rszyma/deadlock-modbox.
 Its mods hold example DiffMods.
 
-## Tree
-
-```text
-spec/v1.md          # core spec, frozen per major version
-profiles/deadlock.md  # reference profile, v1 scope
-decompilers.md       # decompiler id registry
-SPEC-CHANGELOG.md
-site/index.html     # landing, served at source2-diffmod.org
-site/spec/index.html  # spec, served at source2-diffmod.org/spec
-```
-
 ## Edit
 
 If you change the spec, add a changelog line.

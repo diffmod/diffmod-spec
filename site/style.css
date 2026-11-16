@@ -1,0 +1,129 @@
+:root { --fg: #1a1a1a; --bg: #fff; --muted: #999; --code: #f4f4f4; --link: #0645ad; --good: #1a7f37; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #e6e6e6; --bg: #161616; --muted: #666; --code: #262626; --link: #8ab4f8; --good: #3fb950; }
+}
+body { max-width: 44rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.6 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+a { color: var(--link); }
+header { border-bottom: 2px solid var(--fg); margin-bottom: 1.5rem; }
+/* site nav: links wrap as whole links, never inside a link */
+nav.site { display: flex; flex-wrap: wrap; gap: .25rem 1rem; font-size: .9rem; margin-bottom: 1rem; }
+nav a { margin-right: 1rem; }
+nav.site a { margin-right: 0; white-space: nowrap; }
+nav.site a[aria-current] { font-weight: 600; text-decoration: none; color: var(--fg); }
+.tagline { font-size: 1.2rem; font-weight: 600; }
+pre { background: var(--code); padding: 1rem; overflow-x: auto; }
+code { background: var(--code); padding: 0 .25rem; }
+pre code { background: none; padding: 0; }
+blockquote { border-left: 4px solid var(--muted); margin: 1rem 0; padding: .25rem 1rem; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid var(--muted); padding: .25rem .75rem; }
+ol.spec > li { margin-bottom: 1rem; }
+footer { border-top: 1px solid var(--muted); margin-top: 2rem; padding-top: 1rem; font-size: .9rem; }
+.btn { display: inline-block; padding: .5rem 1rem; border: 2px solid var(--fg); color: var(--fg); text-decoration: none; font-weight: 600; }
+.btn.primary { background: var(--fg); color: var(--bg); }
+button.btn { font: inherit; font-weight: 600; cursor: pointer; }
+
+/* landing */
+:root { --add-bg: #e6f4ea; --del: #b3261e; --note: #fff3b0; --note-fg: #3d3200; --note2: #cfe3ff; --note2-fg: #0b2e66; }
+@media (prefers-color-scheme: dark) {
+  :root { --add-bg: #12301c; --del: #ff7b72; --note: #f2df7c; --note2: #9cc2ff; }
+}
+body.landing { max-width: 50rem; }
+.landing main > section { margin-top: 3rem; }
+
+/* hero */
+.kicker { font-size: .85rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin: 1.5rem 0 0; }
+.hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.15; margin: .4rem 0 .75rem; text-wrap: balance; }
+.hero h1 span { display: block; text-wrap: balance; }
+.lead { font-size: 1.15rem; max-width: 40rem; }
+/* the project name in the lead, so it reads as a name and not as a plain word */
+.name { font-weight: 800; }
+/* key promise in the lead: inverted bar (page colors swapped).
+   The vertical padding is .5px less per side than .05em, so the bar is 1px lower than with .05em. */
+.shine { padding: calc(.05em - .5px) .35em; white-space: nowrap; font-weight: 700; background: var(--fg); color: var(--bg); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+@media (max-width: 22.5rem) { .shine { white-space: normal; } }
+/* the two questions players ask, then the kinds of mods where both happen (bullets in up to 2 columns) */
+.ask { margin: 1rem 0 0; max-width: 40rem; }
+.ask p { margin: 0 0 .2rem; }
+.fits { margin: .75rem 0 0; }
+.fits ul { margin: .2rem 0 0; padding-left: 1.2rem; line-height: 1.5; columns: 2 11rem; column-gap: 2.5rem; max-width: 27rem; }
+.fits li { break-inside: avoid; }
+.fits li::marker { color: var(--good); }
+/* status box: what exists today */
+.callout { border: 2px solid var(--fg); padding: .25rem 1.25rem; margin: 1.5rem 0; }
+
+/* "How DiffMod fixes it": three step cards joined by arrows (right on wide screens, down when stacked) */
+#how > h3 { margin-top: 1.75rem; }
+ol.steps { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr; gap: 1.75rem; }
+ol.steps > li { position: relative; border-top: 4px solid var(--fg); padding-top: .5rem; }
+ol.steps > li:not(:last-child)::after { content: "\2193"; position: absolute; left: 0; bottom: -1.75rem; width: 1.75rem; font-size: 1.3rem; font-weight: 800; line-height: 1.75rem; }
+@media (min-width: 40rem) {
+  ol.steps { grid-template-columns: repeat(3, 1fr); }
+  ol.steps > li:not(:last-child)::after { content: "\2192"; left: 100%; bottom: auto; top: calc(-.5em - 2px); line-height: 1; text-align: center; }
+}
+/* a word with an explanation on hover or focus */
+.term { position: relative; border-bottom: 1px dotted var(--muted); cursor: help; }
+.term:hover::after, .term:focus::after { content: attr(data-tip); position: absolute; left: 0; top: 100%; z-index: 2; width: max-content; max-width: min(17rem, 70vw); margin-top: .35rem; padding: .45rem .65rem; background: var(--fg); color: var(--bg); font-size: .85rem; font-weight: 400; line-height: 1.4; }
+
+/* example figures: a "today" panel and a "with DiffMod" panel */
+.fig { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.fig.stack { grid-template-columns: 1fr; }
+.fig .panel { border: 1px solid var(--muted); padding: 0 1rem 1rem; text-align: center; }
+.fig .panel.bad { border-top: 4px solid var(--del); }
+.fig .panel.good { border-top: 4px solid var(--good); }
+.fig h4 { text-align: left; margin: .75rem 0; font-size: 1rem; }
+.fig .result { font-weight: 600; }
+.fig .bad .result { color: var(--del); }
+.fig .good .result { color: var(--good); }
+/* the sum inside a panel: pages and notes in a row, in one column on narrow screens */
+.eq { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .6rem; padding-top: .25rem; }
+.eq .op { font-size: 1.5rem; font-weight: 700; }
+.eq .op.to::before { content: "\2192"; }
+@media (max-width: 42rem) {
+  .eq { flex-direction: column; flex-wrap: nowrap; gap: .25rem; }
+  .eq .op { line-height: 1.2; }
+  .eq .op.to::before { content: "\2193"; }
+}
+.pg { display: flex; flex-direction: column; gap: .25rem; width: 9rem; box-sizing: border-box; padding: .4rem; border: 2px solid var(--fg); background: var(--bg); font-size: .8rem; line-height: 1.35; text-align: left; }
+.pg b { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; padding-bottom: .2rem; border-bottom: 1px solid var(--muted); }
+.pg span { background: var(--code); padding: .1rem .35rem; }
+.pg .a, .pg .b { font-weight: 600; }
+.pg .a { background: var(--note); color: var(--note-fg); }
+.pg .b, .fig .sticky.b { background: var(--note2); color: var(--note2-fg); }
+.pg s { color: var(--del); }
+.pg.out { box-shadow: 4px 4px 0 var(--muted); }
+.fig .sticky { background: var(--note); color: var(--note-fg); width: 6.4rem; min-height: 4rem; padding: .5rem .25rem; box-sizing: border-box; font-size: .85rem; font-weight: 600; transform: rotate(-2deg); }
+.fig .sticky.b { transform: rotate(2deg); }
+.fig .sticky small { display: block; font-size: .8rem; font-weight: 400; line-height: 1.3; margin-top: .25rem; }
+
+/* fold-out lines; the real note shown as a file */
+details { border: 1px solid var(--muted); padding: .5rem 1rem; margin: 1rem 0; }
+summary { cursor: pointer; font-weight: 600; }
+summary .how { float: right; margin-left: 1rem; font-weight: 400; font-size: .75rem; line-height: 1.6rem; text-transform: uppercase; letter-spacing: .05em; opacity: .7; }
+#limits details { margin: .5rem 0; }
+#limits details p { margin: .5rem 0 .25rem; }
+ul.files { list-style: none; padding: 0; }
+ul.files code { display: inline-block; min-width: 9.5rem; font-weight: 600; }
+.file { border: 1px solid var(--muted); margin: .75rem 0 .5rem; }
+.file .name { padding: .25rem .75rem; background: var(--code); border-bottom: 1px solid var(--muted); font: 600 .85rem ui-monospace, Menlo, Consolas, monospace; }
+.diff { font: .9rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--code); padding: .5rem 0; }
+.diff > div { padding: .1rem 1rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff .add { background: var(--add-bg); color: var(--good); font-weight: 600; }
+
+/* "What you get": one card per group */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.card { border: 1px solid var(--muted); padding: 0 1rem; }
+.card h3 { margin-top: 1rem; }
+ul.gets { list-style: none; padding: 0; }
+ul.gets li { padding-left: 1.5rem; position: relative; font-weight: 600; margin-bottom: .6rem; }
+ul.gets li::before { content: "+"; position: absolute; left: 0; color: var(--good); font: 700 1.1rem ui-monospace, Menlo, Consolas, monospace; }
+ul.gets li.same { font-weight: 400; }
+ul.gets li.same::before { content: "="; color: var(--muted); }
+
+/* "Make it real": one job per group */
+.jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin: 1rem 0 1.5rem; }
+.job { display: flex; flex-direction: column; border: 1px solid var(--muted); padding: .7rem 1rem 1rem; }
+.job h3 { font-size: 1rem; margin: 0; }
+.job p { margin: .15rem 0 .9rem; }
+.job .btn { margin-top: auto; align-self: flex-start; white-space: nowrap; padding: .4rem 1rem; }
+@media (max-width: 44rem) { .jobs { grid-template-columns: 1fr; } }

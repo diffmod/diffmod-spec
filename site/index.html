@@ -3,31 +3,207 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Source 2 DiffMod</title>
-<style>
-body { max-width: 44rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.6 system-ui, sans-serif; color: #1a1a1a; }
-header { border-bottom: 2px solid #1a1a1a; margin-bottom: 1.5rem; }
-.tagline { font-size: 1.2rem; font-weight: 600; }
-footer { border-top: 1px solid #999; margin-top: 2rem; padding-top: 1rem; font-size: .9rem; }
-</style>
+<title>DiffMod: a standard for Deadlock mods</title>
+<meta name="description" content="DiffMod is a set of rules for Deadlock mod makers and mod managers. If they follow the rules, your mods work together and break less after game updates.">
+<link rel="canonical" href="https://source2-diffmod.org/">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DiffMod">
+<meta property="og:title" content="Your Deadlock mods could work together">
+<meta property="og:description" content="DiffMod is a set of rules for Deadlock mod makers and mod managers. If they follow the rules, your mods work together and break less after game updates.">
+<meta property="og:url" content="https://source2-diffmod.org/">
+<meta property="og:image" content="https://source2-diffmod.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DiffMod: your Deadlock mods could work together. They could survive game updates.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./style.css">
 </head>
-<body>
-<header>
-<h1>Source 2 DiffMod</h1>
-<p class="tagline">A DiffMod holds plain diffs over decompiled sources.</p>
+<body class="landing">
+<header class="hero">
+<nav class="site">
+<a href="./" aria-current="page">Home</a>
+<a href="./users/">I play with mods</a>
+<a href="./mod-makers/">I make mods</a>
+<a href="./mod-managers/">I make a mod manager</a>
+<a href="./spec/">The rules (spec)</a>
+</nav>
+<p class="kicker">A community-made standard for Deadlock mods</p>
+<h1><span>Your Deadlock mods could work together.</span> <span>They could survive game updates.</span></h1>
+<p class="lead">Meet <b class="name">DiffMod</b>: a set of rules for mod makers and mod managers. If they follow the rules, <span class="shine">your mods will break far less often.</span></p>
+<div class="ask">
+<p><b>“Is it compatible with that other mod?”</b> With DiffMod, usually yes.</p>
+<p><b>“Did the update break my mod?”</b> With DiffMod, usually not.</p>
+</div>
+<div class="fits">
+<b>Both happen a lot with:</b>
+<ul><li>HUD mods</li><li>QOL mods</li><li>minimap mods</li><li>shop and menu mods</li><li>UI fixes</li></ul>
+</div>
+<div class="callout" id="status">
+<p><strong>You cannot use DiffMod yet.</strong> The rules are new. No mod manager reads the notes yet, and mod makers do not add them yet.</p>
+<p><strong>The method already works.</strong> <a href="https://github.com/rszyma/deadlock-modbox">Modbox</a>, the first tool that follows the rules, uses the same kind of note for <a href="https://github.com/rszyma/deadlock-modbox/tree/main/mods">several example mods</a>. It makes the mods you pick work together. After a game update, it often fixes them with no help from the mod maker. But Modbox is not a mod manager: it cannot fix the mods you use today.</p>
+<p><a class="btn primary" href="#act">See how you can help</a></p>
+</div>
 </header>
 <main>
-<p>Source 2 mods ship as VPK packs with compiled sources. A DiffMod ships the edits instead: a plain patch that builders merge and recompile past fresh game files.</p>
+<section id="why">
+<h2>Why mods break today</h2>
+<p>Think of the game as a book. Each page holds the lines that draw one part of your screen. A mod wants to change one line, but today it must swap <b>the whole page</b>. Then two things go wrong:</p>
 <ul>
-<li><a href="./spec/">Read the spec (v1 draft)</a></li>
-<li><a href="https://github.com/s2d-org/source2-diffmod-spec/blob/main/profiles/deadlock.md">Deadlock profile</a> (reference)</li>
-<li><a href="https://github.com/s2d-org/source2-diffmod-spec/blob/main/decompilers.md">Decompiler registry</a></li>
-<li><a href="https://github.com/s2d-org/source2-diffmod-spec">Repo</a></li>
+<li><b>Two mods want the same page.</b> The game takes only one of the two pages. The change from the other mod is gone.</li>
+<li><b>The game gets an update.</b> The update brings a new page, but the mod still swaps in its old one. What the update adds is gone, and your screen can break. You wait for the mod maker to fix it.</li>
 </ul>
-<p>Status is draft. Spec version is 1.</p>
+</section>
+<section id="how">
+<h2>How DiffMod fixes it</h2>
+<ol class="steps">
+<li>The mod brings a small <span class="term" tabindex="0" data-tip="A small text file that comes next to the mod. For mod makers: a .patch file with a plain diff.">note</span> that lists <b>only the lines it changes</b>.</li>
+<li>Your mod manager takes the page <b>fresh from your game</b>.</li>
+<li>It writes the lines from every note onto that page. The game gets one finished page.</li>
+</ol>
+<h3>Example: two mods want the same page</h3>
+<div class="fig stack">
+<div class="panel bad">
+<h4>Today</h4>
+<div class="eq">
+<div class="pg"><b>Page from Mod A</b><span class="a">BIG health bar</span><span>map</span><span>shop button</span></div>
+<span class="op" aria-hidden="true">+</span>
+<div class="pg"><b>Page from Mod B</b><span>health bar</span><span class="b">square map</span><span>shop button</span></div>
+<span class="op to" aria-hidden="true"></span>
+<div class="pg out"><b>You get</b><span><s>BIG</s> health bar</span><span class="b">square map</span><span>shop button</span></div>
+</div>
+<p class="result">The game takes only one of the two pages. The big health bar is gone.</p>
+</div>
+<div class="panel good">
+<h4>With DiffMod</h4>
+<div class="eq">
+<div class="pg"><b>Game page</b><span>health bar</span><span>map</span><span>shop button</span></div>
+<span class="op" aria-hidden="true">+</span>
+<div class="sticky">Mod A note<small>make the health bar big</small></div>
+<span class="op" aria-hidden="true">+</span>
+<div class="sticky b">Mod B note<small>make the map square</small></div>
+<span class="op to" aria-hidden="true"></span>
+<div class="pg out"><b>You get</b><span class="a">BIG health bar</span><span class="b">square map</span><span>shop button</span></div>
+</div>
+<p class="result">One page with both changes. Both mods work.</p>
+</div>
+</div>
+<details>
+<summary>Show me a real note</summary>
+<p>The note is a small file next to the mod file:</p>
+<ul class="files">
+<li><code>pak01_dir.vpk</code> the mod, the same as today</li>
+<li><code>pak01_dir.patch</code> the note, this is new</li>
+</ul>
+<p>This is the whole note. The green line is what the mod adds.</p>
+<div class="file">
+<div class="name">pak01_dir.patch</div>
+<div class="diff">
+<div># title: Compact HUD</div>
+<div># vpk: pak01_dir.vpk</div>
+<div>--- a/panorama/layout/hud.xml</div>
+<div>+++ b/panorama/layout/hud.xml</div>
+<div>@@ -2,6 +2,7 @@</div>
+<div>   &lt;styles&gt;</div>
+<div>     &lt;include src="s2r://panorama/styles/hud.vcss_c" /&gt;</div>
+<div>     &lt;include src="s2r://panorama/styles/hud_common.vcss_c" /&gt;</div>
+<div class="add">+    &lt;include src="s2r://panorama/styles/compact_hud/main.vcss_c" /&gt;</div>
+<div>   &lt;/styles&gt;</div>
+</div>
+</div>
+</details>
+<h3>Example: the game gets an update</h3>
+<div class="fig">
+<div class="panel bad">
+<h4>Today</h4>
+<p>The mod still swaps in its old page. The new page from the update never shows.</p>
+<p class="result">What the update adds is gone. Your screen can break.</p>
+</div>
+<div class="panel good">
+<h4>With DiffMod</h4>
+<p>Your mod manager takes the new page from the update and writes the note onto it.</p>
+<p class="result">You keep the update, and you keep the mod.</p>
+</div>
+</div>
+<p>No clash and no update? Then your mod manager leaves your mods as they are.</p>
+</section>
+<section id="who">
+<h2>What you get</h2>
+<p>If mod makers and mod managers follow the rules, everyone benefits. Find your group.</p>
+<div class="cards">
+<section class="card" id="players">
+<h3>If you play with mods</h3>
+<ul class="gets">
+<li>Mods that work together.</li>
+<li>Fewer broken mods after an update.</li>
+<li>A way to see what a mod changes before you add it.</li>
+<li class="same">You add mods the same way as today.</li>
+<li class="same">No mod manager? Mods work the same as today.</li>
+</ul>
+<p><a href="./users/">More for players</a></p>
+</section>
+<section class="card" id="authors">
+<h3>If you make mods</h3>
+<ul class="gets">
+<li>Fewer "your mod broke my game" messages.</li>
+<li>Less panic after each game update.</li>
+<li>Faster fixes. The note shows the exact spot.</li>
+<li class="same">The same work as today, plus one small note.</li>
+</ul>
+<p><a href="./mod-makers/">More for mod makers</a></p>
+</section>
+<section class="card" id="managers">
+<h3>If you make a mod manager</h3>
+<ul class="gets">
+<li>An answer to "Is it compatible?" before the player starts the game.</li>
+<li>Clashes that your app can merge by itself.</li>
+<li>After an update, a list of the mods that need a fix.</li>
+<li class="same">Mods with no note load the same as today.</li>
+</ul>
+<p><a href="./mod-managers/">More for mod manager makers</a></p>
+</section>
+</div>
+</section>
+<section id="limits">
+<h2>What it does not fix (yet)</h2>
+<p>DiffMod is not magic. Open a line to read more.</p>
+<details>
+<summary><span class="how">common now</span>Mods that come with no note</summary>
+<p>DiffMod helps a mod only if the mod comes with a note and your mod manager reads the note. A mod with no note works exactly as it does today: no better, no worse. That is why your message to mod makers counts.</p>
+</details>
+<details>
+<summary><span class="how">sometimes</span>An update that changes the exact spot a mod changes</summary>
+<p>Today a mod can break each time an update touches its page. With DiffMod it breaks only if the update changes the same spot. The note shows the mod maker where to fix it.</p>
+</details>
+<details>
+<summary><span class="how">rare</span>Two mods that fight over the exact same spot</summary>
+<p>Today two mods clash if they touch the same page. With DiffMod they clash only if they change the same spot, such as one health bar that both mods resize. Then you pick one.</p>
+</details>
+<details>
+<summary><span class="how">not covered</span>Mods that swap pictures, skins or sounds</summary>
+<p>Version 1 of the rules covers mods that move, resize, restyle, add or hide things on your screen, such as the HUD, the shop and the menus. Those clash the most, because they all change the same few pages. Version 1 does not cover mods that swap pictures (such as icons and portraits), skins, models or sounds. Those mods mostly swap things of their own, so they rarely clash.</p>
+</details>
+<details>
+<summary><span class="how">not yet</span>Games other than Deadlock</summary>
+<p>Version 1 of the rules is for Deadlock. The same rules can grow to other Source 2 games later, such as CS2 and Dota 2.</p>
+</details>
+</section>
+<section id="act">
+<h2>Make it real</h2>
+<p>Players get none of this until mod makers add notes and mod managers read them. Pick your part.</p>
+<div class="jobs">
+<div class="job"><h3>You play with mods?</h3><p>Ask your mod makers for it.</p><a class="btn primary" href="./users/#message">Copy the message</a></div>
+<div class="job"><h3>You make mods?</h3><p>Add one small note to your mod.</p><a class="btn primary" href="./mod-makers/">See how</a></div>
+<div class="job"><h3>You make a mod manager?</h3><p>Teach your app to read the notes.</p><a class="btn primary" href="./mod-managers/">See what to build</a></div>
+</div>
+<p>The rules are open. <a href="./spec/">Read them</a>. They belong to <a href="https://github.com/s2d-org">s2d-org</a>, a group on GitHub. We invite mod makers and mod manager makers to join it.</p>
+<p>Questions or ideas? <a href="https://github.com/s2d-org/source2-diffmod-spec/discussions">Ask on GitHub</a>. Found a mistake in the rules? <a href="https://github.com/s2d-org/source2-diffmod-spec/issues">Report it</a>.</p>
+</section>
 </main>
 <footer>
-<p>Canonical text lives in the repo. <a href="https://github.com/rszyma/deadlock-modbox">Modbox</a> is the reference implementation.</p>
+<p><a href="./spec/">The rules (spec)</a> · <a href="https://github.com/s2d-org/source2-diffmod-spec/blob/main/profiles/deadlock.md">Deadlock profile</a> · <a href="https://github.com/s2d-org/source2-diffmod-spec/blob/main/decompilers.md">Decompiler registry</a> · <a href="https://github.com/s2d-org/source2-diffmod-spec">Repo</a></p>
+<p>Source 2, Deadlock, and Valve are trademarks of Valve Corporation. This project has no tie to Valve.</p>
 </footer>
+<script>/* opened from disk: folder links need an explicit index.html */if(location.protocol==="file:")for(const a of document.querySelectorAll("a[href]")){const h=a.getAttribute("href");if(!/^([a-z]+:|#)/i.test(h))a.setAttribute("href",h.replace(/^([^?#]*\/)(?=[?#]|$)/,"$1index.html"))}</script>
 </body>
 </html>

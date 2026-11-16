@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiffMod for mod managers</title>
+<meta name="description" content="How a Deadlock mod manager reads DiffMod companions: check each pair, merge clashes, and repair mods after game updates.">
+<link rel="canonical" href="https://source2-diffmod.org/mod-managers/">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DiffMod">
+<meta property="og:title" content="DiffMod for mod managers">
+<meta property="og:description" content="How a Deadlock mod manager reads DiffMod companions: check each pair, merge clashes, and repair mods after game updates.">
+<meta property="og:url" content="https://source2-diffmod.org/mod-managers/">
+<meta property="og:image" content="https://source2-diffmod.org/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header>
+<nav class="site">
+<a href="../">Home</a>
+<a href="../users/">I play with mods</a>
+<a href="../mod-makers/">I make mods</a>
+<a href="./" aria-current="page">I make a mod manager</a>
+<a href="../spec/">The rules (spec)</a>
+</nav>
+<h1>You make a mod manager?</h1>
+<p class="tagline">Read the companion. Merge clashes. Repair stale files.</p>
+</header>
+<main>
+<section id="benefits">
+<h2>What you get</h2>
+<ul>
+<li>Your app answers "Is it compatible?" before the player starts the game.</li>
+<li>Your app merges most clashes. The player does not pick one mod.</li>
+<li>After a game update, your app finds each mod that hides Valve edits, and it can repair that mod.</li>
+<li>Your app shows the player what each mod changes.</li>
+<li>Mods with no companion load as they do today.</li>
+</ul>
+<p>The cost is a decompile step, a patch step, and a compile step. Your app runs the compile step only for a clash or a repair.</p>
+</section>
+<section id="companion">
+<h2>What a companion is</h2>
+<p>A companion is one <code>.patch</code> file that ships next to a mod VPK. The VPK holds the full mod and loads as it is. The companion holds a plain diff for each game file that the VPK replaces.</p>
+<pre><code># spec: source2-diffmod/v1
+# game: deadlock
+# decompiler: source2viewer-cli/20.1
+# title: Compact HUD
+# vpk: pak01_dir.vpk
+--- a/panorama/layout/hud.xml
++++ b/panorama/layout/hud.xml
+@@ -2,6 +2,7 @@
+   &lt;styles&gt;
+     &lt;include src="s2r://panorama/styles/hud.vcss_c" /&gt;
+     &lt;include src="s2r://panorama/styles/hud_common.vcss_c" /&gt;
++    &lt;include src="s2r://panorama/styles/compact_hud/main.vcss_c" /&gt;
+   &lt;/styles&gt;</code></pre>
+<p>Each <code># vpk:</code> line names one VPK in the same folder. All header keys are optional, except that a companion needs a <code>vpk</code> key.</p>
+</section>
+<section id="build">
+<h2>What to build</h2>
+<ol>
+<li><strong>Find each pair.</strong> A <code>.patch</code> file with a <code>vpk</code> key is a companion. Resolve each VPK name in the folder that holds the companion. If a named VPK is absent, skip the companion and warn.</li>
+<li><strong>Keep each pair.</strong> If your app renames a VPK, record which companion goes with it.</li>
+<li><strong>Check each pair.</strong> Do this on install and after each game update. See <a href="#check">Check a pair</a>.</li>
+<li><strong>Find clashes.</strong> A mod VPK changes each game file that it replaces. Two mods clash on a file if both change it.</li>
+<li><strong>Rebuild each clashed file.</strong> See <a href="#rebuild">Rebuild a file</a>.</li>
+<li><strong>Find stale files.</strong> Do this after each game update. See <a href="#stale">Repair after a game update</a>.</li>
+<li><strong>Do nothing else.</strong> With no clash and no stale file, load each VPK as it is.</li>
+</ol>
+</section>
+<section id="check">
+<h2>Check a pair</h2>
+<ol>
+<li>Decompile each file in the mod VPK that the companion covers.</li>
+<li>Reverse apply the companion to those files.</li>
+<li>If the reverse apply fails, warn. Treat the VPK as a VPK with no companion.</li>
+<li>If the reverse apply succeeds, keep the result. It is the game file that the mod maker used.</li>
+</ol>
+<pre><code>(cd vpk-copy &amp;&amp; git apply -R -p1 --check ../pak01_dir.patch)</code></pre>
+</section>
+<section id="rebuild">
+<h2>Rebuild a file</h2>
+<ol>
+<li>Decompile the game copy of the file. This is the base.</li>
+<li>Apply each companion that covers the file, in the mod order of the player.</li>
+<li>If a companion does not apply, leave it out of that file. Warn, and name the mod and the file.</li>
+<li>Compile the result with the game resourcecompiler.</li>
+<li>Pack all rebuilt files into one VPK. That VPK must take priority over each mod VPK.</li>
+</ol>
+<p>New files, such as the style sheet in the example above, still load from the mod VPKs.</p>
+<p>If a VPK with no companion replaces the file, use its decompiled copy as the base. See spec rule 18.</p>
+</section>
+<section id="stale">
+<h2>Repair after a game update</h2>
+<ol>
+<li>Check each pair again. The check gives the game file that the mod maker used.</li>
+<li>Compare that file with the game copy of today.</li>
+<li>If they differ, the VPK copy is stale. It hides Valve edits.</li>
+<li>Offer a rebuild of that file, and let the player decide.</li>
+</ol>
+<p>A game update makes a VPK copy stale only if Valve edited that same file.</p>
+</section>
+<section id="tools">
+<h2>Tools</h2>
+<ul>
+<li>Decompile with Source2Viewer-CLI. Compile with the CSDK resourcecompiler. The <a href="https://github.com/s2d-org/source2-diffmod-spec/blob/main/profiles/deadlock.md">Deadlock profile</a> gives the paths and the commands.</li>
+<li>Version 1 covers <code>.xml</code>, <code>.css</code> and <code>.js</code> files. For other files, the last load wins, as it does today.</li>
+<li>Record the game build id, the decompiler version and the spec version in the build log.</li>
+<li>If the <code>decompiler</code> key of a companion differs from your decompiler, warn and proceed.</li>
+</ul>
+</section>
+<section id="reference">
+<h2>Reference and questions</h2>
+<ul>
+<li>The strict rules for companions are <a href="../spec/#companions">spec rules 12 to 19</a>.</li>
+<li><a href="https://github.com/rszyma/deadlock-modbox">Modbox</a> is the reference tool for the decompile, patch and compile steps. It does not read companions yet. Its <a href="https://github.com/rszyma/deadlock-modbox/tree/main/mods">mods folder</a> holds several example mods as plain DiffMods, with no VPK.</li>
+<li>Questions and ideas go to <a href="https://github.com/s2d-org/source2-diffmod-spec/discussions">Discussions</a>. Defects in the rules go to the <a href="https://github.com/s2d-org/source2-diffmod-spec/issues">issue tracker</a>.</li>
+<li>If your app reads companions, tell us. The player guide lists such apps.</li>
+</ul>
+</section>
+</main>
+<footer>
+<p>Canonical text lives in the <a href="https://github.com/s2d-org/source2-diffmod-spec">repo</a>. Strict rules live in the <a href="../spec/#companions">spec</a>.</p>
+</footer>
+<script>/* opened from disk: folder links need an explicit index.html */if(location.protocol==="file:")for(const a of document.querySelectorAll("a[href]")){const h=a.getAttribute("href");if(!/^([a-z]+:|#)/i.test(h))a.setAttribute("href",h.replace(/^([^?#]*\/)(?=[?#]|$)/,"$1index.html"))}</script>
+</body>
+</html>

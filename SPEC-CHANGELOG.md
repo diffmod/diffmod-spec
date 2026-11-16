@@ -11,3 +11,7 @@
 - Spec value is namespaced; builders stay lenient.
 - Review pass: optional keys, header end, user build order.
 - Advisory notes for authors.
+- Companions: a DiffMod next to a VPK, for clash merges and stale file checks.
+- New `vpk` header key marks a companion.
+- Rules 12 and 13 move to 20 and 21.
+- Review pass: terms list, key line form, exact clash and check rules.
