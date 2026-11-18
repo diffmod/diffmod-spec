@@ -1,7 +1,6 @@
 # Deadlock Profile
 
 Status is reference.
-Game id is `deadlock`.
 Steam app id is `1422450`.
 This profile covers spec version 1.
 

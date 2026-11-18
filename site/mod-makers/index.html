@@ -76,14 +76,12 @@ Source2Viewer-CLI -i "$GAME/citadel/pak01_dir.vpk" -d -o a -f "$F"
 Source2Viewer-CLI -i mymod/pak50_dir.vpk -d -o b -f "$F"
 {
   printf '# spec: source2-diffmod/v1\n'
-  printf '# game: deadlock\n'
   printf '# decompiler: source2viewer-cli/20.1\n'
   printf '# title: Compact HUD\n'
   diff -ru a b
 } &gt; mymod/pak50_dir.vpk.patch</code></pre>
 <p>Repeat the decompile step for each shared file. The result looks like this. Paths are illustrative.</p>
 <pre><code># spec: source2-diffmod/v1
-# game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Compact HUD
 --- a/panorama/layout/hud.xml
