@@ -6,6 +6,16 @@ This repo holds the Source 2 DiffMod spec and game profiles.
 Spec text is canonical in `spec/`.
 The site mirrors the spec for reads.
 
+## Motivation
+
+UI mods for Deadlock break all the time.
+Two mods clash, or a game update breaks one of them.
+This annoyed me so much that I made [Modbox](https://github.com/rszyma/deadlock-modbox),
+which builds mods from `.patch` files.
+But I cannot keep re-making other people's mods as `.patch` files by myself.
+The fix must come from mod makers and mod managers, through one shared standard.
+Before you is a technical solution, and the only unsolved part is community adoption.
+
 ## Contribute
 
 DiffMod is a community project, and everyone is welcome to help:

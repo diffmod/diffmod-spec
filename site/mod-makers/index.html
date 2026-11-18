@@ -43,8 +43,8 @@
 <section id="ways">
 <h2>Two ways to ship</h2>
 <ul>
-<li><strong>VPK plus companion.</strong> Start here. Ship your VPK as today. Add one <code>.patch</code> file next to it. Players with no mod manager see no change.</li>
-<li><strong>Plain DiffMod.</strong> Ship diffs alone, with no VPK. A manager builds the mod past fresh game files. See the <a href="../spec/">spec</a>.</li>
+<li><strong>VPK plus companion.</strong> Recommended to start here. Ship your VPK as today, with only adding one <code>.patch</code> file next to it. Players with no mod manager see no change.</li>
+<li><strong>Plain DiffMod.</strong> Ship diffs alone, with no VPK. A manager builds the mod past fresh game files. Not recommended unless you know all your users use DiffMod compatible mod manager. See the <a href="../spec/">spec</a>.</li>
 </ul>
 </section>
 <section id="shape">
@@ -58,7 +58,7 @@
 </ul>
 </section>
 <section id="make">
-<h2>Make a companion</h2>
+<h2>How to make a companion (.patch) file</h2>
 <ol>
 <li>List the files in your VPK that the game VPK also holds.</li>
 <li>Decompile each one from the game VPK into folder <code>a</code>.</li>
@@ -110,6 +110,11 @@ Source2Viewer-CLI -i mymod/pak50_dir.vpk -d -o b -f "$F"
 <li>Do not put new files in the companion. The VPK ships them.</li>
 <li>After a game update, managers can rebuild stale files for players. Reissue your VPK and companion when you can.</li>
 </ul>
+</section>
+<section id="faq">
+<h2>Questions</h2>
+<h3>My mod also swaps images, models or sounds. Should I still add a companion?</h3>
+<p>Yes. VPK plus companion is the supported and recommended form for each mod. Version 1 covers <code>.xml</code>, <code>.css</code> and <code>.js</code> files, so the companion holds diffs for those. Images, models and sounds stay in the VPK and load as they do today: the last load wins. Your mod loses nothing, and its UI parts get merges and repairs.</p>
 </section>
 </main>
 <footer>

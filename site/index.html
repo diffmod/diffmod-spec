@@ -30,6 +30,10 @@
 </nav>
 <p class="kicker">A community-made standard for Deadlock mods</p>
 <h1><span>Your Deadlock mods could work together.</span> <span>They could survive game updates.</span></h1>
+<blockquote class="story">
+<p>UI mods for Deadlock break all the time. Two mods clash, or a game update breaks one of them. This annoyed me so much that I made <a href="https://github.com/rszyma/deadlock-modbox">Modbox</a>, which builds mods from <code>.patch</code> files. But I cannot keep re-making other people's mods as <code>.patch</code> files by myself. The fix must come from mod makers and mod managers, through one shared standard. Before you is a technical solution, and the only unsolved part is community adoption.</p>
+<p class="by">— <a href="https://github.com/rszyma">@rszyma</a>, maker of Modbox</p>
+</blockquote>
 <p class="lead">Meet <b class="name">DiffMod</b>: a set of rules for mod makers and mod managers. If they follow the rules, <span class="shine">your mods will break far less often.</span></p>
 <div class="ask">
 <p><b>“Is it compatible with that other mod?”</b> With DiffMod, usually yes.</p>
@@ -50,15 +54,16 @@
 <h2>Why mods break today</h2>
 <p>Think of the game as a book. Each page holds the lines that draw one part of your screen. A mod wants to change one line, but today it must swap <b>the whole page</b>. Then two things go wrong:</p>
 <ul>
-<li><b>Two mods want the same page.</b> The game takes only one of the two pages. The change from the other mod is gone.</li>
-<li><b>The game gets an update.</b> The update brings a new page, but the mod still swaps in its old one. What the update adds is gone, and your screen can break. You wait for the mod maker to fix it.</li>
+<li><b>Two mods want the same page.</b> The game takes only one of the two pages. The mods collide, and the only way to resolve this is to use only 1 mod and disable other.</li>
+<li><b>The game gets an update.</b> When the Valve updates the game in a way that replaces one of original pages, the .vpk mod still holds <b>outdated</b> page! Keeping such mod enabled means effectively erasing Valve's update, and usually causing bugs. Your only options are to wait for the mod maker to fix it, or disable the mod.</li>
 </ul>
 </section>
 <section id="how">
-<h2>How DiffMod fixes it</h2>
+<h2>DiffMod fixes both issues</h2>
+<h4>How it works:</h4>
 <ol class="steps">
-<li>The mod brings a small <span class="term" tabindex="0" data-tip="A small text file that comes next to the mod. For mod makers: a .patch file with a plain diff.">note</span> that lists <b>only the lines it changes</b>.</li>
-<li>Your mod manager takes the page <b>fresh from your game</b>.</li>
+<li>A mod brings a small <span class="term" tabindex="0" data-tip="A small text file that comes next to the mod. For mod makers: a .patch file with a plain diff.">note</span> that lists <b>only the lines it changes</b>.</li>
+<li>Your import it to a mod manager that knows how to use these notes.</li>
 <li>It writes the lines from every note onto that page. The game gets one finished page.</li>
 </ol>
 <h3>Example: two mods want the same page</h3>
@@ -167,12 +172,16 @@
 <h2>What it does not fix (yet)</h2>
 <p>DiffMod is not magic. Open a line to read more.</p>
 <details>
-<summary><span class="how">common now</span>Mods that come with no note</summary>
-<p>DiffMod helps a mod only if the mod comes with a note and your mod manager reads the note. A mod with no note works exactly as it does today: no better, no worse. That is why your message to mod makers counts.</p>
+<summary><span class="how">common now</span>Existing mods that come without attached notes</summary>
+<p>DiffMod helps only if your mods come with notes AND your mod manager supports reading the notes. A mod with no note works exactly as it does today: no better, no worse. That is why your message to mod makers counts.</p>
 </details>
 <details>
 <summary><span class="how">sometimes</span>An update that changes the exact spot a mod changes</summary>
-<p>Today a mod can break each time an update touches its page. With DiffMod it breaks only if the update changes the same spot. The note shows the mod maker where to fix it.</p>
+<p>Today a mod can break each time an update touches its page. With DiffMod, breakages are far less likely to happen than usual .vpk collisions. Still, DiffMod collisions are possible in two cases:</p>
+<ol>
+<li>A Valve update completely changes the internal layout (e.g. a Source engine bump).</li>
+<li>Two DiffMods change the exact same spot.</li>
+</ol>
 </details>
 <details>
 <summary><span class="how">rare</span>Two mods that fight over the exact same spot</summary>
@@ -180,7 +189,8 @@
 </details>
 <details>
 <summary><span class="how">not covered</span>Mods that swap pictures, skins or sounds</summary>
-<p>Version 1 of the rules covers mods that move, resize, restyle, add or hide things on your screen, such as the HUD, the shop and the menus. Those clash the most, because they all change the same few pages. Version 1 does not cover mods that swap pictures (such as icons and portraits), skins, models or sounds. Those mods mostly swap things of their own, so they rarely clash.</p>
+<p>Version 1 of the rules covers mods that move, resize, restyle, add or hide things on your screen, such as the HUD, the shop and the menus. Those clash the most, because they all change the same few pages. The note does not cover pictures (such as icons and portraits), skins, models or sounds. Those mostly swap things of their own, so they rarely clash.</p>
+<p><b>Complex mods that change many things still get the help.</b> Take a mod that changes your HUD and also swaps models, textures or sounds. It comes the same way: the mod plus a note. The note covers the HUD changes, so those get the full help. The models, textures and sounds work as they do today. Nothing gets worse.</p>
 </details>
 <details>
 <summary><span class="how">not yet</span>Games other than Deadlock</summary>
@@ -194,8 +204,8 @@
 <div class="job"><h3>You play with mods?</h3><p>Ask your mod makers for it.</p><a class="btn primary" href="./users/#message">Copy the message</a></div>
 <div class="job"><h3>You make mods?</h3><p>Add one small note to your mod.</p><a class="btn primary" href="./mod-makers/">See how</a></div>
 <div class="job"><h3>You make a mod manager?</h3><p>Teach your app to read the notes.</p><a class="btn primary" href="./mod-managers/">See what to build</a></div>
-<!-- star icon: Octicons star-fill-16, Copyright (c) 2025 GitHub Inc., MIT License, https://github.com/primer/octicons/blob/main/LICENSE -->
-<div class="job all"><div><h3>Want DiffMod to happen?</h3><p>Star it on GitHub. Each star shows mod makers and mod manager makers that people want this.</p></div><a class="btn" href="https://github.com/s2d-org/source2-diffmod-spec"><svg class="icon star" viewBox="0 0 16 16" width="14" height="14" fill="#eac54f" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>Star on GitHub</a></div>
+<!-- star icon: Octicons star-16, Copyright (c) 2025 GitHub Inc., MIT License, https://github.com/primer/octicons/blob/main/LICENSE -->
+<div class="job all"><div><h3>Want DiffMod to happen?</h3><p>Star it on GitHub. Each star shows mod makers and mod manager makers that people want this.</p></div><a class="btn" href="https://github.com/s2d-org/source2-diffmod-spec"><svg class="icon star" viewBox="0 0 16 16" width="14" height="14" fill="#eac54f" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"/></svg>Star on GitHub</a></div>
 </div>
 <p>The rules are open. <a href="./spec/">Read them</a>. They belong to <a href="https://github.com/s2d-org">s2d-org</a>, a group on GitHub. We invite mod makers and mod manager makers to join it.</p>
 <p>Questions or ideas? <a href="https://github.com/s2d-org/source2-diffmod-spec/discussions">Ask on GitHub</a>. Found a mistake in the rules? <a href="https://github.com/s2d-org/source2-diffmod-spec/issues">Report it</a>.</p>
