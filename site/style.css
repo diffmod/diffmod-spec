@@ -136,6 +136,8 @@ ul.gets li.same::before { content: "="; color: var(--muted); }
 }
 .flash { animation: flash 1.6s ease-out; }
 #act { scroll-margin-top: 1rem; }
+/* a jump to a link on the same page scrolls there smoothly, unless the reader asks for less motion */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 /* "Make it real": one job per group */
 .jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin: 1rem 0 1.5rem; }
@@ -154,3 +156,8 @@ ul.gets li.same::before { content: "="; color: var(--muted); }
 @media (prefers-color-scheme: dark) { :root { --star: #e3b341; } }
 .btn .icon { width: .9em; height: .9em; vertical-align: -.05em; margin-right: .4em; }
 .icon.star { fill: var(--star); }
+/* player guide: a jump to the message highlights it for a moment */
+#message { scroll-margin-top: 1rem; }
+#message:target { animation: flash 1.6s ease-out; }
+/* player guide: the FAQ answers hold lists, too */
+#faq details ul { margin: .25rem 0; }
