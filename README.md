@@ -6,6 +6,13 @@ This repo holds the Source 2 DiffMod spec and game profiles.
 Spec text is canonical in `spec/`.
 The site mirrors the spec for reads.
 
+## Contribute
+
+DiffMod is a community project, and everyone is welcome to help:
+mod makers, mod manager makers and players.
+Questions, ideas and small fixes all count.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Reference implementation
 
 Modbox is the reference implementation.
@@ -23,3 +30,13 @@ Freeze each release with a tag such as `v1`.
 Deploy `site/` to `source2-diffmod.org`.
 The spec page lives at `/spec`.
 Pages deploys `site/` on push to `main`.
+
+## License
+
+Copyright (c) 2026 source2-diffmod-spec contributors.
+
+Text is under [CC BY 4.0](LICENSE):
+the spec, the profiles, the decompiler registry and the site text.
+Code is under the [MIT License](LICENSE-MIT):
+the commands and examples in the text, and the site styles and scripts.
+If you copy a part of the text into source code, that part is under the MIT License.
