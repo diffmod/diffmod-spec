@@ -65,26 +65,24 @@
 <li>Decompile each one from your VPK into folder <code>b</code>. Use the same decompiler release.</li>
 <li>Check that both folders hold each file at its VPK path.</li>
 <li>Diff the two folders, and add a header.</li>
-<li>Name the companion after its VPK: <code>pak01_dir.vpk</code> pairs with <code>pak01_dir.patch</code>.</li>
+<li>Name the companion after your VPK, plus <code>.patch</code>: <code>pak50_dir.vpk</code> gets <code>pak50_dir.vpk.patch</code>. Managers find the pair by this name.</li>
 </ol>
 <pre><code>GAME="…/common/Deadlock/game"
 F=panorama/layout/hud.vxml_c
 Source2Viewer-CLI -i "$GAME/citadel/pak01_dir.vpk" -d -o a -f "$F"
-Source2Viewer-CLI -i mymod/pak01_dir.vpk -d -o b -f "$F"
+Source2Viewer-CLI -i mymod/pak50_dir.vpk -d -o b -f "$F"
 {
   printf '# spec: source2-diffmod/v1\n'
   printf '# game: deadlock\n'
   printf '# decompiler: source2viewer-cli/20.1\n'
   printf '# title: Compact HUD\n'
-  printf '# vpk: pak01_dir.vpk\n'
   diff -ru a b
-} &gt; mymod/pak01_dir.patch</code></pre>
+} &gt; mymod/pak50_dir.vpk.patch</code></pre>
 <p>Repeat the decompile step for each shared file. The result looks like this. Paths are illustrative.</p>
 <pre><code># spec: source2-diffmod/v1
 # game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Compact HUD
-# vpk: pak01_dir.vpk
 --- a/panorama/layout/hud.xml
 +++ b/panorama/layout/hud.xml
 @@ -2,6 +2,7 @@
@@ -99,14 +97,15 @@ Source2Viewer-CLI -i mymod/pak01_dir.vpk -d -o b -f "$F"
 <section id="check">
 <h2>Check it</h2>
 <p>The companion must apply to the game copy and reverse apply to your VPK copy.</p>
-<pre><code>(cd a &amp;&amp; git apply --check ../mymod/pak01_dir.patch)
-(cd b &amp;&amp; git apply -R --check ../mymod/pak01_dir.patch)</code></pre>
+<pre><code>(cd a &amp;&amp; git apply --check ../mymod/pak50_dir.vpk.patch)
+(cd b &amp;&amp; git apply -R --check ../mymod/pak50_dir.vpk.patch)</code></pre>
 <p>Managers run the same reverse check. If it fails, they treat your VPK as a plain VPK.</p>
 </section>
 <section id="ship">
 <h2>Ship it</h2>
 <ul>
-<li>Put the <code>.vpk</code> and the <code>.patch</code> in one archive.</li>
+<li>Put the <code>.vpk</code> and its <code>.vpk.patch</code> in one folder of your archive.</li>
+<li>If your mod has variants, give each variant VPK its own companion in the same folder.</li>
 <li>Cover each game file that your VPK replaces.</li>
 <li>Do not put new files in the companion. The VPK ships them.</li>
 <li>After a game update, managers can rebuild stale files for players. Reissue your VPK and companion when you can.</li>

@@ -44,9 +44,9 @@
 <li>A <strong>builder</strong> is a tool that applies DiffMods and packs the result into a VPK. A mod manager that reads DiffMods is a builder.</li>
 <li>A <strong>mod VPK</strong> is a VPK that a mod ships.</li>
 <li>A mod VPK <strong>replaces</strong> a game file if it holds a file at the same path.</li>
-<li>A <strong>companion</strong> is a DiffMod with a <code>vpk</code> key.</li>
-<li>A <strong>plain DiffMod</strong> is a DiffMod with no <code>vpk</code> key.</li>
-<li>A <strong>plain VPK</strong> is a mod VPK that no companion names.</li>
+<li>A <strong>companion</strong> is a DiffMod that ships next to one mod VPK, see rule 12.</li>
+<li>A <strong>plain DiffMod</strong> is a DiffMod that is not a companion.</li>
+<li>A <strong>plain VPK</strong> is a mod VPK with no companion.</li>
 <li>The <strong>game copy</strong> of a target is the file from the game VPKs.</li>
 <li>A <strong>VPK copy</strong> of a target is the file from a mod VPK.</li>
 </ul>
@@ -58,9 +58,9 @@
 <li>A DiffMod is a UTF-8 text file with LF line ends.</li>
 <li>Keep one DiffMod per file.</li>
 <li>The header holds zero or more lines at the top of the file. Each header line starts with <code>#</code>. The header ends at the first line that starts without <code>#</code>.</li>
-<li>A key line has the form <code># &lt;key&gt;: &lt;value&gt;</code>. Trim the spaces around the key and the value. The keys are <code>spec</code>, <code>title</code>, <code>game</code>, <code>game-build</code>, <code>decompiler</code>, and <code>vpk</code>. Each key appears at most once, except <code>vpk</code>. If one of those keys repeats, builders read the first line. Builders ignore unknown <code>#</code> lines. Builders treat them as comments. Compound values use the <code>name/version</code> form. All header keys are optional.</li>
+<li>A key line has the form <code># &lt;key&gt;: &lt;value&gt;</code>. Trim the spaces around the key and the value. The keys are <code>spec</code>, <code>title</code>, <code>game</code>, <code>game-build</code>, and <code>decompiler</code>. Each key appears at most once. If one of those keys repeats, builders read the first line. Builders ignore unknown <code>#</code> lines. Builders treat them as comments. Compound values use the <code>name/version</code> form. All header keys are optional.</li>
 <li>The <code>spec</code> key holds the spec name and version, for example <code>spec: source2-diffmod/v1</code>. A file without a <code>spec</code> key defaults to <code>source2-diffmod/v1</code>. If you add a header, place <code>spec</code> first.</li>
-<li>The <code>title</code> key holds a short human name. The <code>game</code> key holds the game id, for example <code>deadlock</code>. The <code>game</code> key routes the DiffMod to a profile. Builders with one game ignore it. The <code>game-build</code> key is RECOMMENDED and holds the game build id. The <code>decompiler</code> key is RECOMMENDED and holds a registry id plus a version, for example <code>source2viewer-cli/20.1</code>. Take ids from the <a href="#decompilers">registry</a>. The <code>vpk</code> key marks a companion, see rule 12.</li>
+<li>The <code>title</code> key holds a short human name. The <code>game</code> key holds the game id, for example <code>deadlock</code>. The <code>game</code> key routes the DiffMod to a profile. Builders with one game ignore it. The <code>game-build</code> key is RECOMMENDED and holds the game build id. The <code>decompiler</code> key is RECOMMENDED and holds a registry id plus a version, for example <code>source2viewer-cli/20.1</code>. Take ids from the <a href="#decompilers">registry</a>.</li>
 <li>The body is a unified diff. Use <code>diff -u</code> form with <code>---</code> and <code>+++</code> lines. The body MUST apply clean with <code>git apply -p1</code> to the decompiled game files that the author used.</li>
 <li>Paths MUST use <code>a/</code> and <code>b/</code> prefixes. Paths MUST stay relative to the VPK root. New files MUST use <code>--- /dev/null</code> plus <code>+++ b/&lt;path&gt;</code>. Version 1 forbids renames. Version 1 forbids deletes. Use LF line ends in hunks.</li>
 <li>Each target path MUST map to a compiled path through the game profile. Each profile lists its own map. The next table shows the Deadlock map. Files with a raw suffix such as <code>.cfg</code> pass through with no compile step. If no map row fits a target, fail the build. Name the suffix in the error.
@@ -76,14 +76,14 @@
 </ol>
 <h3 id="companions">Companions</h3>
 <ol class="spec" start="12">
-<li>A companion ships next to one or more mod VPKs. The VPKs hold the full mod and load with no build. The companion holds the diffs for the game files that those VPKs replace. Each <code>vpk</code> line names one VPK. The value MUST be a bare file name with no path separator. Resolve the name in the folder that holds the companion. Repeat the key for each VPK. For a pack with chunk files, name the <code>_dir.vpk</code> file. A builder that renames a VPK MUST keep the pair in its own records.</li>
-<li>A companion MUST cover each game file that its VPKs replace, if the profile lists the suffix. The body MUST reverse apply clean to the decompiled VPK copies with <code>git apply -R -p1</code>. Two VPKs of one companion MUST NOT replace the same game file. A companion MUST NOT add new files. New files stay in the VPKs. Files with other suffixes stay outside the companion. For those files, the last load wins.</li>
-<li>Builders MUST NOT apply a companion without its VPKs. If a named VPK is absent, skip the companion. Warn, and name the absent VPK.</li>
-<li>A companion pair needs no build by default. Load its VPKs as they are. Rebuild a target only for a clash, see rule 16, or for a stale copy, see rule 19.</li>
+<li>A companion ships next to one mod VPK. The VPK holds the full mod and loads with no build. The companion holds the diffs for the game files that the VPK replaces. The companion file name MUST be the VPK file name plus <code>.patch</code>. For example, <code>pak50_dir.vpk.patch</code> is the companion of <code>pak50_dir.vpk</code>. The VPK MUST be a VPK that the mod ships, not a game VPK. Keep the companion in the same folder as its VPK. A file whose name ends in <code>.vpk.patch</code> is a companion. A plain DiffMod name MUST NOT end in <code>.vpk.patch</code>. To find its VPK, remove <code>.patch</code> from the name. For a pack with chunk files, use the name of the <code>_dir.vpk</code> file. Each VPK has at most one companion. A mod with variants pairs each variant VPK with its own companion. A builder that renames a VPK MUST rename its companion to match.</li>
+<li>A companion MUST cover each game file that its VPK replaces, if the profile lists the suffix. The body MUST reverse apply clean to the decompiled VPK copies with <code>git apply -R -p1</code>. A companion MUST NOT add new files. New files stay in the VPK. Files with other suffixes stay outside the companion. For those files, the last load wins.</li>
+<li>Builders MUST NOT apply a companion without its VPK. If the VPK is absent, skip the companion. Warn, and name the absent VPK.</li>
+<li>A companion pair needs no build by default. Load its VPK as it is. Rebuild a target only for a clash, see rule 16, or for a stale copy, see rule 19.</li>
 <li>A plain DiffMod changes each target in its body. A mod VPK changes each target whose game file it replaces. Two mods clash on a target if both change it. If mods clash on a target, rebuild that target.</li>
 <li>To rebuild a target, take the game copy as the base and decompile it. Apply each DiffMod that covers the target, in the order the user gives. If a companion does not apply, leave it out of that target. Warn, and name the mod and the target. Compile the result, and pack it into the one VPK from rule 10. That VPK MUST take priority over each mod VPK. New files still load from the mod VPKs.</li>
 <li>A plain VPK copy has no diff. If a plain VPK replaces the target, use its decompiled copy as the base in place of the game copy. If two plain VPKs replace the target, use the copy that the game loads, and warn. A VPK copy that its companion does not cover counts as a plain VPK copy.</li>
-<li>Check each companion pair on install and after each game update. Decompile each VPK copy that the companion covers. Reverse apply the companion to those copies. If the reverse apply fails, the pair does not match. Warn, and treat its VPKs as plain VPKs. If it succeeds, the result is the base that the author used. Compare that base with the game copy. If they differ, the VPK copy is stale and hides Valve edits. Offer a rebuild of that target, and let the user decide. This check and this offer are RECOMMENDED.</li>
+<li>Check each companion pair on install and after each game update. Decompile each VPK copy that the companion covers. Reverse apply the companion to those copies. If the reverse apply fails, the pair does not match. Warn, and treat its VPK as a plain VPK. If it succeeds, the result is the base that the author used. Compare that base with the game copy. If they differ, the VPK copy is stale and hides Valve edits. Offer a rebuild of that target, and let the user decide. This check and this offer are RECOMMENDED.</li>
 </ol>
 <h3 id="scope">Scope and versions</h3>
 <ol class="spec" start="20">
@@ -95,7 +95,7 @@
 <h2>Advisory</h2>
 <p>This section is advisory, not strict.</p>
 <p>Keep hunks small. Small hunks survive game updates. Large ones clash. Prefer style edits over layout edits. Style rules clash less than moved panels. Put new panels, styles, and scripts in new files. Hook them in with small hunks, such as one include line. Place new files under a folder named after the mod.</p>
-<p>A plain DiffMod needs a builder on the user machine. A VPK with a companion loads with no builder. Pick the form that fits your users. Never ship a VPK that replaces game files with no companion. Full game files hide Valve edits. Never ship a game file that you did not change. Name the companion after its VPK, for example <code>pak01_dir.vpk</code> and <code>pak01_dir.patch</code>. Make the companion with a tool, not by hand. Decompile the game copy and the VPK copy with one decompiler, then diff them. Set the <code>decompiler</code> key in each companion. If a game update edits a file that your VPK replaces, reissue the VPK and the companion.</p>
+<p>A plain DiffMod needs a builder on the user machine. A VPK with a companion loads with no builder. Pick the form that fits your users. Never ship a VPK that replaces game files with no companion. Full game files hide Valve edits. Never ship a game file that you did not change. Make the companion with a tool, not by hand. Decompile the game copy and the VPK copy with one decompiler, then diff them. Set the <code>decompiler</code> key in each companion. If a game update edits a file that your VPK replaces, reissue the VPK and the companion.</p>
 <p>Name titles plainly. The title key serves mod lists and managers. Name stored DiffMods with the <code>.patch</code> suffix. Keep three lines of context.</p>
 </section>
 <section id="example">
@@ -105,12 +105,11 @@
 # game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Always show ability suggestions</code></pre>
-<p>A companion looks like this. The VPK ships <code>compact_hud/main.css</code> as a new file. The companion holds only the hook. Paths are illustrative.</p>
+<p>A companion looks like this. Its file name is <code>pak50_dir.vpk.patch</code>, and it sits next to <code>pak50_dir.vpk</code>. The VPK ships <code>compact_hud/main.css</code> as a new file. The companion holds only the hook. Paths are illustrative.</p>
 <pre><code># spec: source2-diffmod/v1
 # game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Compact HUD
-# vpk: pak01_dir.vpk
 --- a/panorama/layout/hud.xml
 +++ b/panorama/layout/hud.xml
 @@ -2,6 +2,7 @@
@@ -162,6 +161,8 @@
 <p>No. A VPK copy is stale only if Valve edited that same file.</p>
 <h3>Why does a companion need its VPK?</h3>
 <p>The diffs hook in new files that only the VPK holds. A build without the VPK points at absent files.</p>
+<h3>Why does the file name pair a companion with its VPK?</h3>
+<p>The name shows that the file is a companion, and it shows which VPK it belongs to. A builder that renames the VPK renames the companion too, so the pair stays correct. A mod with variants ships one companion next to each variant VPK.</p>
 <h3>Why may a companion not add new files?</h3>
 <p>The VPK already ships them. A second copy can drift from the first.</p>
 <h3>What about CS2 or Dota 2?</h3>

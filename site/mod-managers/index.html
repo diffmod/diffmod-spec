@@ -47,7 +47,6 @@
 # game: deadlock
 # decompiler: source2viewer-cli/20.1
 # title: Compact HUD
-# vpk: pak01_dir.vpk
 --- a/panorama/layout/hud.xml
 +++ b/panorama/layout/hud.xml
 @@ -2,6 +2,7 @@
@@ -56,13 +55,13 @@
      &lt;include src="s2r://panorama/styles/hud_common.vcss_c" /&gt;
 +    &lt;include src="s2r://panorama/styles/compact_hud/main.vcss_c" /&gt;
    &lt;/styles&gt;</code></pre>
-<p>Each <code># vpk:</code> line names one VPK in the same folder. All header keys are optional, except that a companion needs a <code>vpk</code> key.</p>
+<p>The file name makes the pair. The companion of <code>pak50_dir.vpk</code> is <code>pak50_dir.vpk.patch</code> in the same folder. Each VPK has at most one companion. All header keys are optional.</p>
 </section>
 <section id="build">
 <h2>What to build</h2>
 <ol>
-<li><strong>Find each pair.</strong> A <code>.patch</code> file with a <code>vpk</code> key is a companion. Resolve each VPK name in the folder that holds the companion. If a named VPK is absent, skip the companion and warn.</li>
-<li><strong>Keep each pair.</strong> If your app renames a VPK, record which companion goes with it.</li>
+<li><strong>Find each pair.</strong> A file whose name ends in <code>.vpk.patch</code> is a companion. Remove <code>.patch</code> from the name to get its VPK, in the same folder. If that VPK is absent, skip the companion and warn.</li>
+<li><strong>Keep each pair.</strong> If your app renames a VPK, rename its companion to match.</li>
 <li><strong>Check each pair.</strong> Do this on install and after each game update. See <a href="#check">Check a pair</a>.</li>
 <li><strong>Find clashes.</strong> A mod VPK changes each game file that it replaces. Two mods clash on a file if both change it.</li>
 <li><strong>Rebuild each clashed file.</strong> See <a href="#rebuild">Rebuild a file</a>.</li>
@@ -78,7 +77,7 @@
 <li>If the reverse apply fails, warn. Treat the VPK as a VPK with no companion.</li>
 <li>If the reverse apply succeeds, keep the result. It is the game file that the mod maker used.</li>
 </ol>
-<pre><code>(cd vpk-copy &amp;&amp; git apply -R -p1 --check ../pak01_dir.patch)</code></pre>
+<pre><code>(cd vpk-copy &amp;&amp; git apply -R -p1 --check ../pak50_dir.vpk.patch)</code></pre>
 </section>
 <section id="rebuild">
 <h2>Rebuild a file</h2>
