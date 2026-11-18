@@ -115,6 +115,8 @@ Source2Viewer-CLI -i mymod/pak50_dir.vpk -d -o b -f "$F"
 <h2>Questions</h2>
 <h3>My mod also swaps images, models or sounds. Should I still add a companion?</h3>
 <p>Yes. VPK plus companion is the supported and recommended form for each mod. Version 1 covers <code>.xml</code>, <code>.css</code> and <code>.js</code> files, so the companion holds diffs for those. Images, models and sounds stay in the VPK and load as they do today: the last load wins. Your mod loses nothing, and its UI parts get merges and repairs.</p>
+<h3>Can Valve ban players who use DiffMod?</h3>
+<p>Very unlikely. The game only ever loads VPKs. With no clash and no stale file, it loads your VPK exactly as today. For a clash, a repair or a plain DiffMod, the mod manager builds the files on the player's PC and packs them into a VPK. The diffs themselves never reach the game. <a href="https://github.com/robbyz512/dota2-minify">Minify</a>, a Dota 2 mod tool, builds its mods the same way: it decompiles game files, applies the mod changes and compiles the result with the resourcecompiler. Its maker says that no one has been banned for its mods. Still, only Valve decides.</p>
 </section>
 </main>
 <footer>
