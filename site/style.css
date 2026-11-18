@@ -127,3 +127,13 @@ ul.gets li.same::before { content: "="; color: var(--muted); }
 .job p { margin: .15rem 0 .9rem; }
 .job .btn { margin-top: auto; align-self: flex-start; white-space: nowrap; padding: .4rem 1rem; }
 @media (max-width: 44rem) { .jobs { grid-template-columns: 1fr; } }
+/* the star ask for everyone: one full-width row under the jobs; the button goes below the text on narrow screens */
+.job.all { grid-column: 1 / -1; flex-flow: row wrap; align-items: center; gap: .75rem 1.5rem; }
+.job.all > div { flex: 1 1 20rem; }
+.job.all p { margin-bottom: 0; }
+.job.all .btn { margin-top: 0; align-self: center; }
+/* an inline icon in a button, at the cap height of the text; the star takes the GitHub star color */
+:root { --star: #eac54f; }
+@media (prefers-color-scheme: dark) { :root { --star: #e3b341; } }
+.btn .icon { width: .9em; height: .9em; vertical-align: -.05em; margin-right: .4em; }
+.icon.star { fill: var(--star); }
