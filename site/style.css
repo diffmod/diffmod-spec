@@ -126,6 +126,17 @@ ul.gets li::before { content: "+"; position: absolute; left: 0; color: var(--goo
 ul.gets li.same { font-weight: 400; }
 ul.gets li.same::before { content: "="; color: var(--muted); }
 
+/* a section that the reader jumps to gets a short highlight that fades out;
+   the shadow extends the highlight past the text edges with no layout shift */
+:root { --flash: #fff3b0; }
+@media (prefers-color-scheme: dark) { :root { --flash: #3d3510; } }
+@keyframes flash {
+  0%, 35% { background: var(--flash); box-shadow: 0 0 0 1rem var(--flash); }
+  100% { background: transparent; box-shadow: 0 0 0 1rem transparent; }
+}
+.flash { animation: flash 1.6s ease-out; }
+#act { scroll-margin-top: 1rem; }
+
 /* "Make it real": one job per group */
 .jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin: 1rem 0 1.5rem; }
 .job { display: flex; flex-direction: column; border: 1px solid var(--muted); padding: .7rem 1rem 1rem; }
