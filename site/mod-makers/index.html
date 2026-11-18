@@ -113,10 +113,19 @@ Source2Viewer-CLI -i mymod/pak50_dir.vpk -d -o b -f "$F"
 </section>
 <section id="faq">
 <h2>Questions</h2>
-<h3>My mod also swaps images, models or sounds. Should I still add a companion?</h3>
-<p>Yes. VPK plus companion is the supported and recommended form for each mod. Version 1 covers <code>.xml</code>, <code>.css</code> and <code>.js</code> files, so the companion holds diffs for those. Images, models and sounds stay in the VPK and load as they do today: the last load wins. Your mod loses nothing, and its UI parts get merges and repairs.</p>
-<h3>Can Valve ban players who use DiffMod?</h3>
+<details>
+<summary>My mod is complex: it changes the UI and also swaps images, models or sounds. Should I add a companion?</summary>
+<p><b>Yes</b>, if your VPK replaces any <code>.xml</code>, <code>.css</code> or <code>.js</code> game file. <b>No</b>, if your mod only swaps images, models or sounds: a companion would be redundant.</p>
+<p>For a mod that does both, ship the VPK as today and add a companion. The companion holds diffs for the <code>.xml</code>, <code>.css</code> and <code>.js</code> files, because those are the files that clash and break after game updates. Images, models and sounds stay in the VPK and load as they do today: the last load wins. Your mod loses nothing, and its UI parts get merges and repairs.</p>
+</details>
+<details>
+<summary>My mod only swaps skins, textures, models or sounds. Do I need a companion?</summary>
+<p><b>No.</b> Version 1 covers only <code>.xml</code>, <code>.css</code> and <code>.js</code> files. Your VPK replaces none of them, so a companion would not do anything useful. Ship your VPK as today. Collisions for these types of mods are already well handled by mod managers.</p>
+</details>
+<details>
+<summary>Can Valve ban players who use DiffMod?</summary>
 <p>Very unlikely. The game only ever loads VPKs. With no clash and no stale file, it loads your VPK exactly as today. For a clash, a repair or a plain DiffMod, the mod manager builds the files on the player's PC and packs them into a VPK. The diffs themselves never reach the game. <a href="https://github.com/robbyz512/dota2-minify">Minify</a>, a Dota 2 mod tool, builds its mods the same way: it decompiles game files, applies the mod changes and compiles the result with the resourcecompiler. Its maker says that no one has been banned for its mods. Still, only Valve decides.</p>
+</details>
 </section>
 </main>
 <footer>

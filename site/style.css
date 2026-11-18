@@ -105,8 +105,8 @@ ol.steps > li:not(:last-child)::after { content: "\2193"; position: absolute; le
 details { border: 1px solid var(--muted); padding: .5rem 1rem; margin: 1rem 0; }
 summary { cursor: pointer; font-weight: 600; }
 summary .how { float: right; margin-left: 1rem; font-weight: 400; font-size: .75rem; line-height: 1.6rem; text-transform: uppercase; letter-spacing: .05em; opacity: .7; }
-#limits details { margin: .5rem 0; }
-#limits details p { margin: .5rem 0 .25rem; }
+#limits details, #faq details { margin: .5rem 0; }
+#limits details p, #faq details p { margin: .5rem 0 .25rem; }
 #limits details ol { margin: .25rem 0; }
 ul.files { list-style: none; padding: 0; }
 ul.files code { display: inline-block; min-width: 9.5rem; font-weight: 600; }
