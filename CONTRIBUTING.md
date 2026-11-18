@@ -2,8 +2,8 @@
 
 Welcome! DiffMod is a project ran by the community, for the community.
 
-- Ask questions and share your ideas in [Discussions](https://github.com/s2d-org/source2-diffmod-spec/discussions).
-- Report issues in the [issues tab](https://github.com/s2d-org/source2-diffmod-spec/issues).
+- Ask questions and share your ideas in [Discussions](https://github.com/diffmod/spec/discussions).
+- Report issues in the [issues tab](https://github.com/diffmod/spec/issues).
 - Get news in our [Discord](https://discord.gg/usmu4RmvCc)
 - Pull requests are welcome for any change.
   For bigger changes, preferably start a discussion first.

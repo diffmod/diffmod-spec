@@ -1,4 +1,4 @@
-# source2-diffmod-spec
+# Source 2 DiffMod Spec
 
 A DiffMod holds plain diffs over decompiled sources.
 
@@ -43,7 +43,7 @@ Pages deploys `site/` on push to `main`.
 
 ## License
 
-Copyright (c) 2026 source2-diffmod-spec contributors.
+Copyright (c) 2026 DiffMod spec contributors.
 
 Text is under [CC BY 4.0](LICENSE):
 the spec, the profiles, the decompiler registry and the site text.
