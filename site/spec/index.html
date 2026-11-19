@@ -71,8 +71,8 @@
 <tr><td><code>.js</code></td><td><code>.vjs_c</code></td></tr>
 </table>
 </li>
-<li>Decompile each target that the game VPKs hold. Apply DiffMods in the order the user gives. If a plain DiffMod does not apply after the earlier ones, fail the build. Name the DiffMod and the target in the error. Compile each result with the game resourcecompiler. Pack compiled outputs plus raw files into one VPK.</li>
-<li>The builder MUST record the game build ID from <code>steam.inf</code>. The builder MUST record the decompiler id and version. The builder MUST record the spec version. Keep this record in the build log. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on decompiler mismatch is RECOMMENDED. Fail on decompiler mismatch is allowed but not RECOMMENDED.</li>
+<li>Decompile each target that the game VPKs hold. Apply DiffMods in the order the user gives. If a plain DiffMod does not apply after the earlier ones, fail the build. Name the DiffMod and the target in the error. Compile each result with the compiler that the game profile names. Pack compiled outputs plus raw files into one VPK.</li>
+<li>The builder MUST record the game build id that the game profile defines. The builder MUST record the decompiler id and version. The builder MUST record the spec version. Keep this record in the build log. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on decompiler mismatch is RECOMMENDED. Fail on decompiler mismatch is allowed but not RECOMMENDED.</li>
 </ol>
 <h3 id="companions">Companions</h3>
 <ol class="spec" start="12">
@@ -132,7 +132,7 @@
 <p>Each decompiler has a short id. The id maps to one tool and one release line. Same id plus same version MUST give byte-identical cleartext for same VPK input.</p>
 <table>
 <tr><th>id</th><th>tool</th><th>home</th></tr>
-<tr><td><code>source2viewer-cli</code></td><td>Source2Viewer-CLI</td><td><a href="https://github.com/ValveResourceFormat/Source2Viewer">ValveResourceFormat/Source2Viewer</a></td></tr>
+<tr><td><code>source2viewer-cli</code></td><td>Source2Viewer-CLI</td><td><a href="https://github.com/ValveResourceFormat/ValveResourceFormat">ValveResourceFormat/ValveResourceFormat</a></td></tr>
 </table>
 <p>Take the version from the upstream release tag, for example <code>20.1</code>. Quote the tag verbatim. Source2Viewer-CLI reads all Source 2 games. The game list lives at s2v.app.</p>
 <p>Send a pull request that adds one row. Take the first free slug. Never reuse a dead id. Add a SPEC-CHANGELOG.md line. Builders MUST NOT fail a build on an unknown id. Log a warning.</p>
