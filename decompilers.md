@@ -23,7 +23,7 @@ Log a warning.
 
 | id | tool | home |
 | --- | --- | --- |
-| `source2viewer-cli` | Source2Viewer-CLI | https://github.com/ValveResourceFormat/Source2Viewer |
+| `source2viewer-cli` | Source2Viewer-CLI | https://github.com/ValveResourceFormat/ValveResourceFormat |
 
 Take the version from the upstream release tag, for example `20.1`.
 Quote the tag verbatim.
