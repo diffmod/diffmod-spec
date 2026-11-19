@@ -72,7 +72,7 @@
 </table>
 </li>
 <li>Decompile each target that the game VPKs hold. Apply DiffMods in the order the user gives. If a plain DiffMod does not apply after the earlier ones, fail the build. Name the DiffMod and the target in the error. Compile each result with the compiler that the game profile names. Pack compiled outputs plus raw files into one VPK.</li>
-<li>The builder MUST record the game build id that the game profile defines. The builder MUST record the decompiler id and version. The builder MUST record the spec version. Keep this record in the build log. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on decompiler mismatch is RECOMMENDED. Fail on decompiler mismatch is allowed but not RECOMMENDED.</li>
+<li>Each build MUST give a build record to the user. The record holds the game build id that the game profile defines. The record holds the decompiler id and version. The record holds the spec version. Show the record after each build, also after a failed build. Let the user copy the record into a bug report. Builders MUST NOT need the <code>decompiler</code> key to build. Warn on decompiler mismatch is RECOMMENDED. Fail on decompiler mismatch is allowed but not RECOMMENDED.</li>
 </ol>
 <h3 id="companions">Companions</h3>
 <ol class="spec" start="12">
